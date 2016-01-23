@@ -71,11 +71,14 @@ int rainbowInc = 0;
 int rainbowMax = 32;
 
 void fullRainbow(int pixIdx) {
-  int r = Math.sin(0.3*rainbowInx + 0) * 127 + 128;
-  int g = Math.sin(0.3*rainbowInx + 2) * 127 + 128;
-  int b = Math.sin(0.3*rainbowInx + 4) * 127 + 128;
+  int r = Math.sin(0.3 * rainbowInx + 0) * 127 + 128;
+  int g = Math.sin(0.3 * rainbowInx + 2) * 127 + 128;
+  int b = Math.sin(0.3 * rainbowInx + 4) * 127 + 128;
 
-  pixels.setPixel(pixIdx, pixels.Color(r,g,b));
+  pixels.setPixel(pixIdx, pixels.Color(r, g, b));
+
+  rainbowInc = (rainbowInx++) % rainbowMax;
+
 }
 }
 
