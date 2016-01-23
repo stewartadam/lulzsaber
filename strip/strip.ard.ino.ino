@@ -34,10 +34,14 @@ void loop() {
 
   // For a set of NeoPixels the first NeoPixel is 0, second is 1, all the way up to the count of pixels minus one.
 
+   int r = 0;
+   int g = 0;
+   int b = 0;
   for(int i=0;i<NUMPIXELS;i++){
-
+    r = g = (b++%100);
+    
     // pixels.Color takes RGB values, from 0,0,0 up to 255,255,255
-    pixels.setPixelColor(i, pixels.Color(0,0,30));
+    pixels.setPixelColor(i, pixels.Color(r,g,b));
 
     pixels.show(); // This sends the updated pixel color to the hardware.
 
