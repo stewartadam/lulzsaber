@@ -13,14 +13,20 @@
 
 // How many NeoPixels are attached to the Arduino?
 #define NUMPIXELS      60
-#define NUMBEAM        8
+#define BEAM_LENGTH    5
+#define BRIGHT_R       200
+#define MAIN_R         30
+#define OFF            0
+
+
+int off = 0;
 
 // When we setup the NeoPixel library, we tell it how many pixels, and which pin to use to send signals.
 // Note that for older NeoPixel strips you might need to change the third parameter--see the strandtest
 // example for more information on possible values.
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
-int delayval = 3; // delay for half a second
+int delayval = 100; // delay for half a second
 int idx = 0;
 int btnval = 0;
 
@@ -48,20 +54,42 @@ void loop() {
     // pixels.Color takes RGB values, from 0,0,0 up to 255,255,255
     pixels.setPixelColor(i, pixels.Color(r,g,b));
 */
-  
     int mainR = 30;
-    int brightR = 255;
-    int off = 0;
     
 //  btnval = digitalRead(BTNPIN);
-
-    for (int i = 0; i < NUMPIXELS-NUMBEAM; i++) {
-        pixels.setPixelColor(i, pixels.Color(mainR, off, off));
-    }
-    for (int beam = 0; beam < NUMBEAM; ++beam) {
-        pixels.setPixelColor(idx++, pixels.Color(brightR, off, off));
-        idx = idx % NUMPIXELS;
-    }
+    displayMain();
+    displayBeam();
+    
     pixels.show(); // This sends the updated pixel color to the hardware.
     delay(delayval); // Delay for a period of time (in milliseconds).
 }
+
+void displayMain() {
+    for (int i = 0; i < NUMPIXELS; i++) {
+        pixels.setPixelColor(i, pixels.Color(MAIN_R, OFF, OFF));
+    }
+}
+
+void displayBeam() {
+    for (int beam_step = 0; beam_step < BEAM_LENGTH; ++beam_step) {
+        int brightR = percent(BRIGHT_R, beam_step, BEAM_LENGTH);
+        int pos = (idx+beam_step) % NUMPIXELS;
+        pixels.setPixelColor(pos, pixels.Color(brightR, OFF, OFF));
+    }
+    idx = (idx + 1) % NUMPIXELS;
+}
+
+bool inRange(int value, int st, int en) {
+    if (en < st) {
+        return (value >= st) || (value <= en);
+    } else {
+        return (value >= st) && (value <= en);
+    }
+}
+
+int percent(int value, int percent, int totalPercent) {
+    int temp = (int) (value * (percent*1.0/totalPercent));
+    temp += 255 - BRIGHT_R;
+    return temp;
+}
+
