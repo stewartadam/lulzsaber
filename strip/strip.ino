@@ -30,6 +30,7 @@ Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ80
 int delayval = 10; // delay for half a second
 int idx = 0;
 int btnval = 0;
+bool buttonOn = false; //default state, 'off'
 
 void setup() {
   // This is for Trinket 5V 16MHz, you can remove these three lines if you are not using a Trinket
@@ -57,19 +58,18 @@ void loop() {
   */
   int mainR = 30;
 
-  btnval = digitalRead(BTNPIN);
-  Serial.print(btnval);
-  Serial.print("\n");
-  if (btnval == HIGH) {
+  buttonCheck();
+
+  if (buttonOn) {
     displayMain();
     displayBeam();
   }
-  else{
-    for(int i=0;i<NUMPIXELS;i++){
-     // fullRainbow(i);
-     pixels.setPixelColor(i,pixels.Color(0,0,0));
+  else {
+    for (int i = 0; i < NUMPIXELS; i++) {
+      // fullRainbow(i);
+      pixels.setPixelColor(i, pixels.Color(0, 0, 0));
     }
-    
+
   }
 
   pixels.show(); // This sends the updated pixel color to the hardware.
@@ -91,14 +91,6 @@ void displayBeam() {
   idx = (idx + 1) % NUMPIXELS;
 }
 
-bool inRange(int value, int st, int en) {
-  if (en < st) {
-    return (value >= st) || (value <= en);
-  } else {
-    return (value >= st) && (value <= en);
-  }
-}
-
 int percent(int value, int percent, int totalPercent) {
   int temp = (int) (value * (percent * 1.0 / totalPercent));
   temp += 255 - BRIGHT_R;
@@ -114,3 +106,18 @@ void fullRainbow(int pixIdx) {
 
   rainbowInc = (rainbowInc++) % rainbowMax;
 }
+
+void buttonCheck() {
+  int tempbtn = digitalRead(BTNPIN);
+  if (btnval == HIGH &&
+      btnval != tempbtn) {
+    buttonOn = !buttonOn;
+  }
+  btnval = tempbtn;
+}
+/*
+    000000000111000000000000111000000
+      off         on            off
+   /
+*/
+
