@@ -16,7 +16,8 @@
 #define NUMPIXELS      60
 #define BEAM_LENGTH    15
 #define BRIGHT_R       200
-#define MAIN_R         30
+#define MEDIUM_R       140
+#define MAIN_R         0
 #define OFF            0
 
 int rainbowInc = 0;
@@ -30,6 +31,8 @@ Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ80
 int delayval = 10; // delay for half a second
 int idx = 0;
 int btnval = 0;
+
+int pivot = 0;
 bool buttonOn = false; //default state, 'off'
 
 void setup() {
@@ -57,23 +60,56 @@ void loop() {
     pixels.setPixelColor(i, pixels.Color(r,g,b));
   */
   int mainR = 30;
-
+  Serial.print(wrapAround(-1));
   buttonCheck();
 
-  if (buttonOn) {
+  if (!buttonOn) {
     displayMain();
     displayBeam();
+    pivot++;
+
+    //if(pivot>NUMPIXELS)
+      //pivot = 0;
+      pivot++;
+    pivot = wrapAround(pivot);
   }
+
   else {
     for (int i = 0; i < NUMPIXELS; i++) {
       // fullRainbow(i);
-      pixels.setPixelColor(i, pixels.Color(0, 0, 0));
+      pixels.setPixelColor(i, pixels.Color(0, 255, 0));
     }
 
   }
 
   pixels.show(); // This sends the updated pixel color to the hardware.
   delay(delayval); // Delay for a period of time (in milliseconds).
+}
+
+void displayTim() {
+  for(int i= 0; i<NUMPIXELS; i++){
+      pixels.setPixelColor(i, pixels.Color(MAIN_R, OFF, OFF));
+  }
+
+  //set pivot
+  pixels.setPixelColor(pivot, pixels.Color(BRIGHT_R, OFF, OFF));
+  pixels.setPixelColor(wrapAround(pivot+1), pixels.Color(MEDIUM_R, OFF, OFF));
+  pixels.setPixelColor(wrapAround(pivot-1), pixels.Color(MEDIUM_R, OFF, OFF));
+
+}
+
+int wrapAround(int pivot){
+    while(pivot<0){
+      pivot+= NUMPIXELS;
+    }
+    return pivot % NUMPIXELS;
+
+ /* 
+  if(pivot<0){
+      return NUMPIXELS-pivot;
+    
+  }
+  return pivot % NUMPIXELS;*/
 }
 
 void displayMain() {
