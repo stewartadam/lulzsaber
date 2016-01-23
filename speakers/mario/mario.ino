@@ -48,7 +48,8 @@ void loop() {
     tocar(tom, tvalue);
  
     delayMicroseconds(1000);
-  }      delay(1000);
+  }
+  delay(1000);
  
   hasplayed = true;
 }

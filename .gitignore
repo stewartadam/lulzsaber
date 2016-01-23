@@ -1,0 +1,4 @@
+*.wav
+*.o
+
+speakers/wav/wav2c-master/wav2c
